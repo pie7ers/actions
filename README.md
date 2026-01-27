@@ -170,3 +170,15 @@ This action relies on `actions/create-github-app-token@v2`, which uses Web APIs 
 ## 📄 License
 
 MIT
+
+
+## TAG STEPS
+
+```sh
+git tag v1.0.0
+git push origin v1.0.0
+#alias v1.0.0 -> v1
+git tag -f v1
+git push origin v1 --force
+#git log --decorate --oneline
+```

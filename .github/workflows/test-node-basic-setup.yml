@@ -7,7 +7,7 @@ on:
     branches: [main, test, dev]
 
 jobs:
-  test:
+  test-node-basic-setup:
     runs-on: ubuntu-latest
     
     steps:
