@@ -7,7 +7,7 @@ on:
     branches: [main, test, dev]
 
 jobs:
-  trigger-repo-action:
+  test-trigger-repo-dispatch:
     runs-on: ubuntu-latest
     env:
       APP_ID: ${{ secrets.GH_APP_ID }}

@@ -7,7 +7,7 @@ on:
     branches: [ main, test, dev]
 
 jobs:
-  test:
+  test-wait-for-api:
     runs-on: ubuntu-latest
 
     steps:
