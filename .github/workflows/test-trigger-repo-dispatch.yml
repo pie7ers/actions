@@ -2,8 +2,9 @@ name: Test trigger repo distpatch action
 run-name: Trigger repo dispatch action by @${{ github.actor }}
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
+  pull_request:
+    branches: [main, test, dev]
 
 jobs:
   trigger-repo-action:

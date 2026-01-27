@@ -33,17 +33,24 @@ runs:
         private-key: ${{ inputs.private-key }}
         owner: ${{ inputs.owner }}
         repositories: ${{ inputs.repository }}
-  
+
     - name: Trigger repo ${{ inputs.repository}}
       shell: bash
       run: |
-        set -e
+        set -euo pipefail
+
+        payload=$(jq -n \
+          --arg event "${{ inputs.event-type }}" \
+          --argjson client '${{ inputs.client-payload }}' \
+          '{
+            event_type: $event,
+            client_payload: $client
+          }'
+        )
+
         curl -X POST \
           -H "Accept: application/vnd.github+json" \
           -H "Content-Type: application/json" \
           -H "Authorization: Bearer ${{ steps.app-token.outputs.token }}" \
           https://api.github.com/repos/${{ inputs.owner }}/${{ inputs.repository }}/dispatches \
-          -d "{
-            \"event_type\": \"${{ inputs.event-type }}\",
-            \"client_payload\": ${{ inputs.client-payload }}
-          }"
+          -d "$payload"
