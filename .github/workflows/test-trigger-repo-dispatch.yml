@@ -1,0 +1,36 @@
+name: Test trigger repo distpatch action
+run-name: Trigger repo dispatch action by @${{ github.actor }}
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  trigger-repo-action:
+    runs-on: ubuntu-latest
+    env:
+      APP_ID: ${{ secrets.GH_APP_ID }}
+      PRIVATE_KEY: ${{ secrets.GH_PRIVATE_KEY }}
+      TEST_REPO_OWNER: ${{ vars.TEST_REPO_OWNER }}
+      TEST_REPO: ${{ vars.TEST_REPO }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Trigger Event
+        uses: ./trigger-repo-dispatch
+        with:
+          app-id: ${{ secrets.GH_APP_ID }}
+          private-key: ${{ secrets.GH_PRIVATE_KEY }}
+          owner: ${{ vars.TEST_REPO_OWNER }}
+          repository: ${{ vars.TEST_REPO }}
+          event-type: test-own-action
+          client-payload: |
+            {
+              "env": "test-workflow",
+              "system": "own-actions",
+              "version": "v1",
+              "trigger_by": "${{ github.actor }}"
+            }
+          

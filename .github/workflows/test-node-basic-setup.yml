@@ -1,0 +1,31 @@
+name: Test Node Basic Setup
+run-name: Basic Setup by @${{ github.actor }}
+
+on:
+  pull_request:
+    branches: [main, test, dev]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create minimal Node project
+        run: |
+          npm init -y
+          npm pkg set scripts.test="node -e \"console.log('node works')\""
+          npm i express
+
+      - name: Setup node
+        uses: ./node/basic-setup
+
+      - name: Check node version
+        run: |
+          node -v
+
+      - name: Run test command
+        run: |
+          npm test

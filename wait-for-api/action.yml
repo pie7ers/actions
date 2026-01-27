@@ -1,0 +1,25 @@
+name: wait api
+description: request and api to validate if it's running
+
+inputs:
+  url-health:
+    description: "full url with health endpoint e.g https://my-api.com/health"
+    required: true
+  retries:
+    description: number of retries that will be made
+    default: "30"
+  interval:
+    description: "sleep seconds between retries, bear in mind that interval*retries gives the max time that the process could last"
+    default: "10"
+
+runs:
+  using: composite
+  steps: 
+    - name: Chek health endpoint
+      shell: bash
+      run: |
+        chmod +x "$GITHUB_ACTION_PATH/check-api.sh"
+        "$GITHUB_ACTION_PATH/check-api.sh" \
+          "${{ inputs.url-health }}" \
+          "${{ inputs.retries }}" \
+          "${{ inputs.interval }}"

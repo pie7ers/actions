@@ -1,0 +1,28 @@
+name: Test wait for api action
+run-name: Testing wait for api aciton @${{ github.actor }}
+
+on:
+  pull_request: 
+    branches: [ main, test, dev]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start fake API
+        run: |
+          nohup python3 -m http.server 8080 &
+          sleep 3
+      
+      - name: debug fake API
+        run: |
+          curl http://localhost:8080
+
+      - name: Check fake api 
+        uses: ./wait-for-api
+        with:
+          url-health: "http://localhost:8080"

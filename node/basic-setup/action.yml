@@ -1,0 +1,27 @@
+name: "Basic Setup for Node projects"
+description: "Setup node installing deps"
+
+inputs:
+  node-version:
+    description: Node.js version
+    default: lts/*
+
+runs:
+  using: composite
+  steps:
+    - name: Setup node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Cache npm
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: npm-${{ runner.os }}-${{ inputs.node-version }}-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          npm-${{ runner.os }}-${{ inputs.node-version }}-
+
+    - name: Install deps
+      shell: bash
+      run: npm ci

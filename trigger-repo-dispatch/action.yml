@@ -1,0 +1,49 @@
+name: "Trigger repository"
+description: "Trigger repository via repository_dispatchs using github app token"
+
+inputs:
+  app-id:
+    description: app id of the github app sent through secret
+    required: true
+  private-key:
+    description: private key of the github app sent through secret
+    required: true
+  owner:
+    description: repo owner
+    required: true
+  repository:
+    description: repo name
+    required: true
+  event-type:
+    description: event_type to trigger repository_dispatchs
+    required: true
+  client-payload:
+    description: JSON string to send as client_payload
+    required: false
+    default: "{}"
+
+runs:
+  using: composite
+  steps:
+    - name: Generate token
+      uses: actions/create-github-app-token@v2
+      id: app-token
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
+        owner: ${{ inputs.owner }}
+        repositories: ${{ inputs.repository }}
+  
+    - name: Trigger repo ${{ inputs.repository}}
+      shell: bash
+      run: |
+        set -e
+        curl -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Content-Type: application/json" \
+          -H "Authorization: Bearer ${{ steps.app-token.outputs.token }}" \
+          https://api.github.com/repos/${{ inputs.owner }}/${{ inputs.repository }}/dispatches \
+          -d "{
+            \"event_type\": \"${{ inputs.event-type }}\",
+            \"client_payload\": ${{ inputs.client-payload }}
+          }"
