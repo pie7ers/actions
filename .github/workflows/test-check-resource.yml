@@ -1,0 +1,37 @@
+name: Test check resource action
+run-name: Testing check resource action @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+  push: 
+    branches: [main]
+    paths:
+      - '.github/workflows/test-check-resource.yml'
+      - 'check-resource/**'
+  pull_request: 
+    branches: [main, test, dev]
+    paths:
+      - '.github/workflows/test-check-resource.yml'
+      - 'check-resource/**'
+
+jobs:
+  test-check-resource:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start fake API
+        run: |
+          nohup python3 -m http.server 8080 &
+          sleep 3
+      
+      - name: debug fake API
+        run: |
+          curl http://localhost:8080
+
+      - name: Check fake api 
+        uses: ./check-resource
+        with:
+          url: "http://localhost:8080"

@@ -1,0 +1,25 @@
+name: Check HTTP resource
+description: Wait until a HTTP or HTTPS resource becomes available
+
+inputs:
+  url:
+    description: "HTTP or HTTPS resource to check e.g https://my-api.com/health"
+    required: true
+  retries:
+    description: "Number of attempts to make"
+    default: "30"
+  interval:
+    description: "Seconds to wait between attempts"
+    default: "10"
+
+runs:
+  using: composite
+  steps: 
+    - name: Check HTTP resource
+      shell: bash
+      run: |
+        chmod +x "$GITHUB_ACTION_PATH/check-resource.sh"
+        "$GITHUB_ACTION_PATH/check-resource.sh" \
+          "${{ inputs.url }}" \
+          "${{ inputs.retries }}" \
+          "${{ inputs.interval }}"

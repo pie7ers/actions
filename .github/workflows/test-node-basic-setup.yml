@@ -3,8 +3,16 @@ run-name: Basic Setup by @${{ github.actor }}
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/test-node-basic-setup.yml'
+      - 'node/basic-setup/**'
   pull_request:
     branches: [main, test, dev]
+    paths:
+      - '.github/workflows/test-node-basic-setup.yml'
+      - 'node/basic-setup/**'
 
 jobs:
   test-node-basic-setup:
