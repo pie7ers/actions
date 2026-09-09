@@ -3,8 +3,16 @@ run-name: Trigger repo dispatch action by @${{ github.actor }}
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/test-trigger-repo-dispatch.yml'
+      - 'trigger-repo-dispatch/**'
   pull_request:
     branches: [main, test, dev]
+    paths:
+      - '.github/workflows/test-trigger-repo-dispatch.yml'
+      - 'trigger-repo-dispatch/**'
 
 jobs:
   test-trigger-repo-dispatch:

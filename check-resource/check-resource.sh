@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-URL_HEALTH="${1:?ERROR: URL_HEALTH input arg is required}"
+URL="${1:?ERROR: URL input arg is required}"
 RETRIES="${2:-30}"
 INTERVAL="${3:-10}"
 
@@ -14,12 +14,24 @@ INTERVAL="${3:-10}"
 [[ "$INTERVAL" =~ ^[0-9]+$ ]] || { echo "INTERVAL must be numeric"; exit 1; }
 
 for i in $(seq 1 "$RETRIES"); do
-  echo "checking /health [$i/$RETRIES]"
-  if curl -sSf "$URL_HEALTH"; then
-    echo "Service is ready"
+  echo "checking [$URL] [$i/$RETRIES]"
+  if curl \
+    --silent \
+    --show-error \
+    --fail \
+    --connect-timeout 5 \
+    --max-time 10 \
+    --connect-timeout 5 \
+    "$URL"; 
+  then
+    echo "Resource is ready"
     exit 0
   fi
-  sleep "$INTERVAL"
+  
+  if [[ "$i" -lt "$RETRIES" ]]; then
+    echo "Waiting for $INTERVAL seconds befor next attempt..."
+    sleep "$INTERVAL"
+  fi
 done
-echo "Service did not become ready"
+echo "Resource did not become ready"
 exit 1

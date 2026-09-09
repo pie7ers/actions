@@ -36,7 +36,7 @@ Each action is validated through a dedicated workflow under `.github/workflows`.
 ### Run tests locally
 
 ```bash
-act -W .github/workflows/test-wait-for-api.yml
+act -W .github/workflows/test-check-resource.yml
 act -W .github/workflows/test-node-basic-setup.yml
 ```
 
@@ -59,12 +59,23 @@ Notes:
 
 ## 📦 Usage
 
+## Deprecated Actions
+
+### `wait-for-api`
+
+> [!IMPORTANT]
+> ⚠️ **Deprecated:** `wait-for-api` is deprecated and will be removed in `v2.0.0`.
+
+Use `check-resource` instead.
+
+---
+
 ### Node – Basic Setup
 
 Assumes the repository has already been checked out.
 
 ```yaml
-name: Run tests on staging
+name: Run tests
 on:
   push:
     branches: [main]
@@ -77,29 +88,31 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: pie7ers/actions/node/basic-setup@v1
+        uses: pie7ers/actions/node/basic-setup@v2
 ```
 
 ---
 
-### Wait for API
 
-Polls a health endpoint until it becomes available or retries are exhausted.
+### Check Resource
+
+Polls a resource until it becomes available or retries are exhausted.
 
 ```yaml
-name: Run tests on staging
+name: Run tests
 on:
   push:
     branches: [main]
 
 jobs:
-  wait-api:
+  check-resource:
     runs-on: ubuntu-latest
     steps:
-      - name: Check API
-        uses: pie7ers/actions/wait-for-api@v1
+      - name: Check Resource
+        uses: pie7ers/actions/check-resource@v2
         with:
-          url-health: "https://my-api.com/health"
+          url: "https://my-resource.com"
+          #url: "https://my-api.com/health"
           retries: 20        # default: 30
           interval: 5        # default: 5 (seconds)
 ```
@@ -133,7 +146,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger repository dispatch
-        uses: pie7ers/actions/trigger-repo-dispatch@v1
+        uses: pie7ers/actions/trigger-repo-dispatch@v2
         with:
           app-id: ${{ secrets.GH_APP_ID }}
           private-key: ${{ secrets.GH_PRIVATE_KEY }}
@@ -163,7 +176,11 @@ This action relies on `actions/create-github-app-token@v2`, which uses Web APIs 
 * Composite actions **must not perform repository checkout** unless explicitly required
 * Prefer passing configuration via inputs instead of environment variables
 * Always test actions on GitHub-hosted runners before releasing
-* Use semantic version tags (`v1`, `v1.1`, etc.) for consumers
+* Use semantic version tags:
+  - `v1.0.0` — exact version
+  - `v1` — latest compatible release within major version 1
+  - `v2.0.0` — exact version
+  - `v2` — latest compatible release within major version 2
 
 ---
 
